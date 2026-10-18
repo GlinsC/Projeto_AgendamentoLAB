@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from Agendamento.router.routers import router as agendamento_router
+from router.routers import router as agendamento_router
 
 
 app = FastAPI(

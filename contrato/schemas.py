@@ -1,96 +1,203 @@
-from datetime import datetime
-from typing import Optional
+from datetime import date, datetime, time
+
+from pydantic import BaseModel, ConfigDict
 
 
+class UsuarioBase(BaseModel):
+    nome_completo: str
+    cpf: str
+    vinculo_institucional: str
+    perfil: str
 
-from pydantic import BaseModel, ConfigDict, Field
+
+class UsuarioCreate(UsuarioBase):
+    pass
 
 
-class AgendamentoBase(BaseModel):
-    data_agendamento: datetime
-    horario_inicio: datetime
-    horario_fim: datetime
-    finalidade: str = Field(max_length=100)
-    descricao: Optional[str] = None
+class UsuarioSchema(UsuarioBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProjetoBase(BaseModel):
+    descricao: str
+    finalidade: str
+    id_responsavel: int
     quantidade_participantes: int
-    status: bool = True
-    motivo_recusa: Optional[str] = None
-    laboratorio_id: int = None
+    documentacao_base: str
 
 
-class AgendamentoCreate(AgendamentoBase):
+class ProjetoCreate(ProjetoBase):
     pass
 
 
-class AgendamentoUpdate(BaseModel):
-    data_agendamento: Optional[datetime] = None
-    horario_inicio: Optional[datetime] = None
-    horario_fim: Optional[datetime] = None
-    finalidade: Optional[str] = Field(default=None, max_length=100)
-    descricao: Optional[str] = None
-    quantidade_participantes: Optional[int] = None
-    status: Optional[bool] = None
-    motivo_recusa: Optional[str] = None
-    laboratorio_id: int = None
-
-
-class AgendamentoSchema(AgendamentoBase):
+class ProjetoSchema(ProjetoBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class LaboratorioBase(BaseModel):
-    nome_laboratorio: str = Field(max_length=100)
-    descricao: Optional[str] = None
-    bloco: str = Field(max_length=50)
-    sala: str = Field(max_length=50)
-    capacidade: int
-    status: bool = True
-    tipo_uso: str = Field(max_length=50)
-    equipamentos: Optional[str] = None
-    cor_card: Optional[str] = Field(default=None, max_length=20)
+class ProjetoParticipanteBase(BaseModel):
+    id_projeto: int
+    id_usuario: int
+    papel_no_projeto: str
 
 
-class LaboratorioCreate(LaboratorioBase):
+class ProjetoParticipanteCreate(ProjetoParticipanteBase):
     pass
 
 
-class LaboratorioUpdate(BaseModel):
-    nome_laboratorio: Optional[str] = Field(default=None, max_length=100)
-    descricao: Optional[str] = None
-    bloco: Optional[str] = Field(default=None, max_length=50)
-    sala: Optional[str] = Field(default=None, max_length=50)
-    capacidade: Optional[int] = None
-    status: Optional[bool] = None
-    tipo_uso: Optional[str] = Field(default=None, max_length=50)
-    equipamentos: Optional[str] = None
-    cor_card: Optional[str] = Field(default=None, max_length=20)
+class ProjetoParticipanteSchema(ProjetoParticipanteBase):
+    model_config = ConfigDict(from_attributes=True)
 
 
-class LaboratorioSchema(LaboratorioBase):
+class EspacoBase(BaseModel):
+    nome: str
+    descricao: str
+    capacidade: str
+    bloco: str
+    disponibilidade: bool
+
+
+class EspacoCreate(EspacoBase):
+    pass
+
+
+class EspacoSchema(EspacoBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class AnexosAgendamentoBase(BaseModel):
-    nome_arquivo: str = Field(max_length=100)
-    caminho_storage: str = Field(max_length=200)
-    agendamento_id: int
+class SolicitacaoBase(BaseModel):
+    tipo: str
+    urgencia: bool
+    status: str
+    decisao_justificativa: str
+    id_projeto: int
+    id_solicitante: int
+    id_espaco: int
 
 
-class AnexosAgendamentoCreate(AnexosAgendamentoBase):
+class SolicitacaoCreate(SolicitacaoBase):
     pass
 
 
-class AnexosAgendamentoUpdate(BaseModel):
-    nome_arquivo: Optional[str] = Field(default=None, max_length=100)
-    caminho_storage: Optional[str] = Field(default=None, max_length=200)
-    agendamento_id: Optional[int] = None
+class SolicitacaoSchema(SolicitacaoBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
-class AnexosAgendamentoSchema(AnexosAgendamentoBase):
+class RecursoBase(BaseModel):
+    nome: str
+    tipo: str
+    autorizacao_necessaria: bool
+    disponibilidade: bool
+    id_espaco: int
+
+
+class RecursoCreate(RecursoBase):
+    pass
+
+
+class RecursoSchema(RecursoBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SolicitacaoHorarioBase(BaseModel):
+    data_reserva: date
+    hora_inicio: time
+    ora_fim: time
+    id_solicitacao: int
+
+
+class SolicitacaoHorarioCreate(SolicitacaoHorarioBase):
+    pass
+
+
+class SolicitacaoHorarioSchema(SolicitacaoHorarioBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SolicitacaoRecursoBase(BaseModel):
+    id_solicitacao: int
+    id_recurso: int
+
+
+class SolicitacaoRecursoCreate(SolicitacaoRecursoBase):
+    pass
+
+
+class SolicitacaoRecursoSchema(SolicitacaoRecursoBase):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AnexoBase(BaseModel):
+    nome_arquivo: str
+    url_caminho: str
+    tipo_arquivo: str
+    data_upload: datetime
+    id_solicitacao: int
+
+
+class AnexoCreate(AnexoBase):
+    pass
+
+
+class AnexoSchema(AnexoBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AgendaReservaBase(BaseModel):
+    data_hora_inicio: datetime
+    data_hora_fim: datetime
+    situacao: str
+    id_solicitacao: int
+    id_espaco: int
+
+
+class AgendaReservaCreate(AgendaReservaBase):
+    pass
+
+
+class AgendaReservaSchema(AgendaReservaBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AgendaReservaRecursoBase(BaseModel):
+    id_agenda: int
+    id_recurso: int
+
+
+class AgendaReservaRecursoCreate(AgendaReservaRecursoBase):
+    pass
+
+
+class AgendaReservaRecursoSchema(AgendaReservaRecursoBase):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MonitorTurnoBase(BaseModel):
+    periodo_atuacao_inicio: datetime
+    periodo_atuacao_fim: datetime
+    id_monitor: int
+
+
+class MonitorTurnoCreate(MonitorTurnoBase):
+    pass
+
+
+class MonitorTurnoSchema(MonitorTurnoBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
